@@ -68,7 +68,8 @@ class MainPage(tk.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.queue = None
-
+        self.main_thread = threading.Thread(target=self.initialize)
+        self.main_thread.daemon = True
         buttons_frame = ttk.Frame(self)
         entry_frame = ttk.Frame(self)
         buttons_frame.grid(row=1, column=1, sticky='nesw')
@@ -88,7 +89,7 @@ class MainPage(tk.Frame):
         self.project_name_entry = ttk.Entry(entry_frame)
         self.project_name_entry.grid(row=2, column=1)
 
-        start_button = ttk.Button(buttons_frame, text='Start', command=self.initialize)
+        start_button = ttk.Button(buttons_frame, text='Start', command=lambda: self.main_thread.start())
         start_button.grid(row=0, column=0, sticky='nsew')
         stop_button = ttk.Button(buttons_frame, text='Stop')
         stop_button.grid(row=0, column=1, sticky='nsew')
@@ -116,7 +117,7 @@ class MainPage(tk.Frame):
         Spider(MainPage.PROJECT_NAME, MainPage.START_URL, MainPage.DOMAIN_NAME)
         self.create_workers()
         self.crawl()
-    
+
     def create_workers(self):
         for _ in range(MainPage.THREADS_NUMBER):
             t = threading.Thread(target=self.work)
@@ -165,6 +166,4 @@ class WaitList(tk.Frame):
         self.wait_text.pack()
 
 app = App()
-
 app.mainloop()
-
